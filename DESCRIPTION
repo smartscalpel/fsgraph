@@ -1,0 +1,15 @@
+Package: fsgraph
+Type: Package
+Title: Feature-Sample Graph
+Version: 0.0.1
+Date: 2018-01-25
+Author: Anatoly Sorokin
+Maintainer: Anatoly Sorokin <lptolik@gmail.com>
+Description: Feature-Sample Graph.
+License: file LICENSE
+LazyLoad: yes
+Depends: igraph
+Imports: 
+Suggests: knitr
+URL: 
+RoxygenNote: 6.0.1
