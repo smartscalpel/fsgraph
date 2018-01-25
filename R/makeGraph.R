@@ -12,7 +12,7 @@
 #'
 #' If \code{colOrder} is not provided order of columns in \code{df} will be
 #' calculated by ordering columns according number of distinct values in it in
-#' increasing order.
+#' increasing order by function \code{\link{getMetaColOrder}}.
 #'
 #' @param df metadata data frame, describing relationship between metanodes.
 #' @param colOrder vector of column names. Metanodes defined by unique names in
@@ -23,18 +23,49 @@
 #'
 #' @return list with two \code{data.frames} vertex and edges.
 #' @export
+#' @import plyr
+#' @seealso \code{\link{getMetaColOrder}} for ordering columns.
 #'
 #' @examples
 makeMetaNodes<-function(df,colOrder,strength=1e3){
   if(missing(colOrder)){
-    t<-apply(df,2,function(.x){length(table(.x))})
-    colOrder<-names(df)[order(t,decreasing = FALSE)]
+    colOrder<-getMetaColOrder(df)
   }
-  v<-data.frame()
+  v<-ldply(colOrder,makeMetaVertex,df)
   e<-data.frame()
   return(list(vertex=v,edges=e))
 }
 
+#' Create metavertices from metadata column.
+#'
+#' @param column column to take
+#' @param df data.frame to analyse
+#'
+#' @return data.frame of vertices
+#' @export
+#'
+#' @examples
+makeMetaVertex<-function(column,df){
+  val<-as.character(unique(df[,column]))
+  vd<-data.frame(ID=paste0(column,seq_along(val)),
+                 Name=val,Type=column)
+  return(vd)
+}
+#' Get column order for metadata.
+#'
+#' @param df metadata \code{data.frame}
+#'
+#' @return vector of column names
+#' @export
+#'
+#' @examples
+#' md<-data.frame(class=c(rep('A',4),rep('B',4)),subclass=paste0(c(rep('A',4),rep('B',4)),rep(c(1,2),4)),sample=paste0('sample',1:8))
+#' getMetaColOrder(md)
+getMetaColOrder<-function(df){
+  t<-apply(df,2,function(.x){length(table(.x))})
+  colOrder<-names(df)[order(t,decreasing = FALSE)]
+  return(colOrder)
+}
 #' Make FS graph.
 #'
 #' @param featureMatrix matrix of feature-sample edge strength.

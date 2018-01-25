@@ -10,6 +10,6 @@ License: file LICENSE
 LazyLoad: yes
 Depends: igraph
 Imports: 
-Suggests: knitr
+Suggests: testthat, knitr
 URL: 
 RoxygenNote: 6.0.1
