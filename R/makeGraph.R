@@ -31,8 +31,13 @@ makeMetaNodes<-function(df,colOrder,strength=1e3){
   if(missing(colOrder)){
     colOrder<-getMetaColOrder(df)
   }
+  if(length(strength)==1){
+    strength<-rep(strength,length(colOrder)-1)
+  }else if(length(strength)>length(colOrder)-1){
+    strength<-strength[1:(length(colOrder)-1)]
+  }
   v<-ldply(colOrder,makeMetaVertex,df)
-  e<-data.frame()
+  e<-ldply(1:(length(colOrder)-1),makeMetaEdges,colOrder,df,v,strength)
   return(list(vertex=v,edges=e))
 }
 
@@ -44,6 +49,7 @@ makeMetaNodes<-function(df,colOrder,strength=1e3){
 #' @return data.frame of vertices
 #' @export
 #'
+#' @seealso \code{\link[igraph]{graph_from_data_frame}}
 #' @examples
 makeMetaVertex<-function(column,df){
   val<-as.character(unique(df[,column]))
@@ -51,6 +57,34 @@ makeMetaVertex<-function(column,df){
                  Name=val,Type=column)
   return(vd)
 }
+
+#' Create metaedges from two consecutive columns
+#'
+#' @param idx index of the first column
+#' @param columns vector of column names
+#' @param df metadata data.frame
+#' @param vertex  data.frame of metavertices
+#' @param strength value of the metaedge
+#'
+#' @return edges data.frame
+#' @export
+#'
+#' @seealso \code{\link[igraph]{graph_from_data_frame}}
+#' @examples
+makeMetaEdges<-function(idx,columns,df,vertex,strength){
+  if(idx>=length(columns)){
+    warning(paste('Index is outside of the column vector:',idx,' - ',length(columns)-1,'\n'))
+    return(data.frame(Source='A',Target='B',value=-1e-3)[FALSE,])
+  }
+  cSource<-columns[idx]
+  cTarget<-columns[idx+1]
+  sdf<-unique(df[,c(cSource,cTarget)])
+  sidx<-match(sdf[,cSource],vertex$Name)
+  tidx<-match(sdf[,cTarget],vertex$Name)
+  val<-data.frame(Source=as.character(vertex$ID[sidx]),Target=as.character(vertex$ID[tidx]),value=strength[idx])
+  return(val)
+}
+
 #' Get column order for metadata.
 #'
 #' @param df metadata \code{data.frame}
@@ -79,6 +113,11 @@ getMetaColOrder<-function(df){
 #' @import igraph
 #' @examples
 makeGraph<-function(featureMatrix,metadata,colOrder,metaStrength=1e3){
+  if(length(metaStrength)==1){
+    metaStrength<-rep(metaStrength,length(colOrder)-1)
+  }else if(length(metaStrength)>length(colOrder)-1){
+    metaStrength<-metaStrength[1:(length(colOrder)-1)]
+  }
   g<-empty_graph()
   return(g)
 }
