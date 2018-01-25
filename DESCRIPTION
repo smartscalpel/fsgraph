@@ -9,7 +9,7 @@ Description: Feature-Sample Graph.
 License: file LICENSE
 LazyLoad: yes
 Depends: igraph
-Imports: 
+Imports: RColorBrewer, plyr, reshape2
 Suggests: testthat, knitr
 URL: 
 RoxygenNote: 6.0.1

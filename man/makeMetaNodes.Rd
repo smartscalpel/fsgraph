@@ -33,5 +33,8 @@ second and so on.
 \details{
 If \code{colOrder} is not provided order of columns in \code{df} will be
 calculated by ordering columns according number of distinct values in it in
-increasing order.
+increasing order by function \code{\link{getMetaColOrder}}.
+}
+\seealso{
+\code{\link{getMetaColOrder}} for ordering columns.
 }

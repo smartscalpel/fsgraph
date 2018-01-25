@@ -118,7 +118,10 @@ makeMetaEdges <- function(idx, columns, df, vertex, strength) {
 #' @export
 #'
 #' @examples
-#' md<-data.frame(class=c(rep('A',4),rep('B',4)),subclass=paste0(c(rep('A',4),rep('B',4)),rep(c(1,2),4)),sample=paste0('sample',1:8))
+#' md<-data.frame(class=c(rep('A',4),rep('B',4)),
+#' subclass=paste0(c(rep('A',4),
+#' rep('B',4)),rep(c(1,2),4)),
+#' sample=paste0('sample',1:8))
 #' getMetaColOrder(md)
 getMetaColOrder <- function(df) {
   t <- apply(df, 2, function(.x) {
@@ -196,8 +199,11 @@ makeGraphDFs <-
 
     e <- l$edges
     sID <- v$ID[match(snames, v$Name)]
+    fID <- v$ID[match(fnames,v$Name)]
     rownames(featureMatrix) <- sID
-    e <- rbind(e, melt(featureMatrix, varnames = c('Source', 'Target')))
+    colnames(featureMatrix) <- fID
+    mfm<-melt(featureMatrix, varnames = c('Source', 'Target'))
+    e <- rbind(e, mfm[mfm$value>0,])
     return(list(vertex = v, edges = e))
   }
 
