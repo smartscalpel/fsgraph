@@ -39,6 +39,8 @@ makeMetaNodes <- function(df, colOrder, strength = 1e3) {
   v <- ldply(colOrder, makeMetaVertex, df)
   e <-
     ldply(1:(length(colOrder) - 1), makeMetaEdges, colOrder, df, v, strength)
+  sapply(v$ID,function(.x){return(sum(e$value[e$Source==.x])+sum(e$value[e$Target==.x]))})->vertW
+  v$weight<-vertW
   return(list(vertex = v, edges = e))
 }
 
@@ -185,13 +187,15 @@ makeGraphDFs <-
                     colOrder = colOrder,
                     strength = metaStrength)
     v <- l$vertex
+    fv<-data.frame(
+      ID = paste0('f', 1:dim(featureMatrix)[2]),
+      Name = fnames,
+      Type = 'feature',
+      weight = colSums(featureMatrix),
+      stringsAsFactors = FALSE
+    )
     v <- rbind(v,
-               data.frame(
-                 ID = paste0('f', 1:dim(featureMatrix)[2]),
-                 Name = fnames,
-                 Type = 'feature',
-                 stringsAsFactors = FALSE
-               ))
+               fv)
     tp <- unique(v$Type)
     cl <- brewer.pal(length(tp), 'Set3')
     v$color <- cl[match(v$Type, tp)]

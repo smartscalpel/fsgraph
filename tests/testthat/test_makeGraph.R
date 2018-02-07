@@ -107,7 +107,7 @@ test_that('makeMetanode makes graph with order',{
   l<-makeMetaNodes(md,c('class','subclass','sample'))
   expect_type(l,'list')
   expect_equal(length(l),2)
-  expect_equal(dim(l$vertex),c(14,3))
+  expect_equal(dim(l$vertex),c(14,4))
   expect_equal(dim(l$edges),c(12,3))
 })
 
